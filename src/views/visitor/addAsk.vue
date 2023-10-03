@@ -1,0 +1,402 @@
+<template>
+  <div class="submitPage">
+    <Form ref="formValidate" :model="formValidate" :label-width="80">
+      <FormItem label="请假类型">
+        <Select v-model="formValidate.status" placeholder="请选择请假类型">
+          <Option value="1">事假</Option>
+          <Option value="2">病假</Option>
+          <Option value="3">其他</Option>
+        </Select>
+      </FormItem>
+      <FormItem label="开始时间">
+          <DatePicker v-model="formValidate.startTime" type="datetime" format="yyyy-MM-dd HH:mm" placeholder="请选择开始时间"  @on-ok="choseStartTime()" @on-clear="clearStartTime()"></DatePicker>
+      </FormItem>
+      <FormItem label="结束时间">
+          <DatePicker v-model="formValidate.endTime" type="datetime" format="yyyy-MM-dd HH:mm" 
+          placeholder="请选择结束时间" @on-ok="choseEndTime()" @on-clear="clearEndTime()"></DatePicker>
+      </FormItem>
+      <FormItem label="请假时长">
+          <Input v-model='formValidate.totalTime' readonly />
+      </FormItem>
+      <FormItem label="体温情况">
+        <RadioGroup v-model="formValidate.bodyTempStat">
+            <Radio label="体温正常" border></Radio>
+            <Radio label="体温异常" border></Radio>
+        </RadioGroup>
+      </FormItem>
+      <FormItem label="体温">
+          <Input v-model="formValidate.bodyTemp" placeholder="请输入体温度数" />
+      </FormItem>
+      <FormItem label="请假事由" label-position="top">
+          <Input class="textarea" v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入请假事由，若请病假，请填写病情，如发烧（体温度数），是否咳嗽，是否咽喉痛等。" />
+      </FormItem>
+       <FormItem class="uploadBox">
+         <div class="demo-upload-list" v-for="(item,index) in formValidate.uploadList" :key="index">
+            <template v-if="item.status === 'finished'">
+                <!-- <Image :src="item.url" fit="cover" width="100%" height="100%" /> -->
+                <img :src="item.url" fit="cover" width="100%" height="100%" alt="" />
+                <div class="demo-upload-list-cover">
+                    <Icon type="ios-eye-outline" @click="handleView(item.name)"></Icon>
+                    <Icon type="ios-trash-outline" @click="handleRemove(item)"></Icon>
+                </div>
+            </template>
+            <template v-else>
+                <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+            </template>
+          </div>
+          <Upload
+            ref="upload"
+            :show-upload-list="false"
+            :default-file-list="formValidate.defaultList"
+            :on-success="handleSuccess"
+            :format="['jpg','jpeg','png']"
+            :max-size="2048"
+            :on-format-error="handleFormatError"
+            :on-exceeded-size="handleMaxSize"
+            :before-upload="handleBeforeUpload"
+            multiple
+            type="drag"
+            action="https://xskwx.zjhuaxuntong.com/jxaxService/eventrec/uploadEventPic">
+            <div class="upload">
+                <span>图片</span>
+                <Icon type="ios-add-circle-outline" size="20"></Icon>
+            </div>
+        </Upload>
+        <ImagePreview v-model="formValidate.visible" :preview-list="['http://39.171.241.227:18551/images/event/' + formValidate.imgName]" />
+      </FormItem>
+      <!-- <FormItem class="stepBox">
+        <Timeline class="stepContainer">
+            <TimelineItem class="stepcont">
+              <div>
+                <p class="name">直接主管</p>
+                <p class="desc">1个主管审批</p>
+              </div>
+              <p class="personName">张三</p>
+            </TimelineItem>
+            <TimelineItem class="stepcont">
+              <div>
+                <p class="name">直接主管</p>
+                <p class="desc">1个主管审批</p>
+              </div>
+              <p class="personName">张三</p>
+            </TimelineItem>
+            <TimelineItem class="stepcont">
+              <div>
+                <p class="name">直接主管</p>
+                <p class="desc">1个主管审批</p>
+              </div>
+              <p class="personName">张三</p>
+            </TimelineItem>
+        </Timeline>
+      </FormItem> -->
+      <FormItem class="lastFrom">
+          <Button type="primary" class="submitBtn" @click="handleSubmit('formValidate')">提交</Button>
+      </FormItem>
+    </Form>
+  </div>
+</template>
+
+<script>
+import http from '@/libs/http'
+import {URL} from '@/libs/url'
+import common from '@/libs/units.js'
+import status1 from '@/assets/imgs/status1.png'
+export default {
+  name: 'index',
+  data () {
+    return {
+      title:'学生请假',
+      formValidate: {
+        status: '',
+        startTime: '',
+        endTime: '',
+        totalTime: '',
+        bodyTempStat:'',
+        bodyTemp: '',
+        desc: '',
+        defaultList: [],
+        imgName: '',
+        visible: false,
+        uploadList: []
+      },
+      uploadListArr:[],//图片数据提交变量
+      noStartChose: {
+        disabledDate (date) {
+          return date && date.valueOf() < Date.now() - 86400000;
+        }
+      },
+      noEndChose:{
+        disabledDate (date) {
+          return date && date.valueOf() < Date.now() - 86400000;
+        }
+      },
+      studentId:'',
+      optPhone:'',
+    }
+  },
+  created(){
+    document.title = this.title;
+    this.studentId = this.$route.query.studentId;
+    this.optPhone = this.$route.query.optPhone;
+  },
+  activated (){
+    document.title = this.title;
+  },
+  mounted() {
+    this.formValidate.uploadList = this.$refs.upload.fileList;
+    console.log("获取图片地址11",this.$refs.upload.fileList)
+    this.$refs.upload.fileList.forEach(element => {
+      this.uploadListArr.push(element.url)
+    });
+    console.log("获取图片地址---",this.uploadListArr)
+  },
+  methods: {
+    //发布申请
+    addAskFun(){
+      // this.formValidate
+      var params = {
+        eventEndTime: common.changeTimeFormat(this.formValidate.endTime),
+        eventPicPathArr: this.uploadListArr,
+        eventReason: this.formValidate.desc,
+        eventStartTime: common.changeTimeFormat(this.formValidate.startTime),
+        eventTotalDay: this.formValidate.totalTime,
+        eventType: this.formValidate.status,
+        optPhone: this.optPhone,
+        studentId:this.studentId,
+        temperature: this.formValidate.bodyTemp,
+        temperatureStatus: this.formValidate.bodyTempStat=='体温正常'?1:2,
+        optPhone:this.optPhone,
+      }
+      console.log("params",params);
+      http({
+        //这里是你自己的请求方式、url和data参数
+        method: 'post',
+        url:URL.recordUrl.addAsk,
+        data:params,
+        //假设后台需要的是表单数据这里你就可以更改
+        headers: {
+          "Content-Type":"application/json",
+        }
+      }).then((res) => {
+        console.log("res",res)
+        if(res.code==200){
+          console.log("res",res)
+          setTimeout(() => {
+            this.$router.go(-1);
+          }, 1500);
+        }else{
+          this.$Message.info(res.msg);
+        }
+      }).catch(function (err) {
+        console.log(err);
+      });
+    },
+    choseStartTime(){
+      //如果结束时间不为空，则反向计算时差
+      
+      if(this.formValidate.endTime){
+        var startTime = this.formValidate.startTime.getTime();
+        var endTime = this.formValidate.endTime.getTime();
+        if(startTime>endTime){
+          this.$Message.info('结束时间不能小于开始时间');
+          this.formValidate.startTime = '';
+        }else{
+          var xiangchazhi = endTime - startTime;
+          this.formValidate.totalTime = common.TimeInterval(xiangchazhi)
+        }
+      }
+    },
+    choseEndTime(){
+      //如果开始时间不为空，则正向计算时差
+      if(this.formValidate.startTime){
+        var startTime = this.formValidate.startTime.getTime();
+        var endTime = this.formValidate.endTime.getTime();
+        if(startTime>endTime){
+          this.$Message.info('结束时间不能小于开始时间');
+          this.formValidate.endTime = '';
+        }else{
+          var xiangchazhi = endTime - startTime;
+          this.formValidate.totalTime = common.TimeInterval(xiangchazhi)
+        }
+      }
+    },
+    clearStartTime(){
+      this.formValidate.startTime = '';
+    },
+    clearStartTime(){
+      this.formValidate.endTime = '';
+    },
+    handleSubmit (name) {
+        this.$refs[name].validate((valid) => {
+            if (valid) {
+                this.addAskFun();
+                // this.$Message.success('Success!');
+            } else {
+                this.$Message.error('Fail!');
+            }
+        })
+    },
+    handleReset (name) {
+        this.$refs[name].resetFields();
+    },
+    handleView (name) {
+        console.log("打开图片地址",name);
+        this.formValidate.imgName = name;
+        this.formValidate.visible = true;
+    },
+    handleRemove (file) {
+        console.log("删除",file)
+        console.log("删除11",this.uploadListArr)
+        const fileList = this.$refs.upload.fileList;
+        this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+        this.uploadListArr.splice(fileList.indexOf(file), 1);
+    },
+    handleSuccess (res, file) {
+      console.log("res",file);
+      file.name =  res.data;
+      file.url =  res.data;
+      console.log("图片地址数组",this.formValidate.uploadList)
+      this.uploadListArr.push(file.url)
+    },
+    handleFormatError (file) {
+        this.$Message.error('文件' + file.name + ' 不正确，请选择JPG还是PNG.');
+    },
+    handleMaxSize (file) {
+        this.$Message.error('文件' + file.name + ' 太大不能超过2M.');
+    },
+    handleBeforeUpload () {
+        const check = this.formValidate.uploadList.length < 5;
+        if (!check) {
+            this.$Notice.warning({
+                title: 'Up to five pictures can be uploaded.'
+            });
+        }
+        return check;
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.submitPage{
+  // width:95%;
+  // margin:0 auto;
+  background:#fff;
+  padding-bottom:50px;
+  .textarea{
+    
+    /deep/.ivu-input{
+      text-align: left;
+    }
+  }
+  .submitBtn{
+    background:#18a470;
+    width:92%;
+    position:fixed;
+    bottom:25px;
+    background:#18a470;
+    left:0;
+    right:0;
+    margin:0 auto;
+  }
+  .upload{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+  }
+  .uploadBox{
+    /deep/.ivu-form-item-content{
+      margin-left:16px !important;
+    }
+  }
+  .stepBox{
+    /deep/.ivu-form-item-content{
+      margin-left:16px !important;
+      margin-top:20px;
+    }
+    .stepContainer{
+      .stepcont{
+        /deep/.ivu-timeline-item-content{
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          .name{
+            font-weight:600;
+            font-size:14px;
+            line-height:18px;
+          }
+          .desc{
+            font-size:13px;
+            line-height:18px;
+            margin-top:5px;
+            color:#999;
+          }
+          .personName{
+            padding-right:10px;
+          }
+        }
+        
+      }
+    }
+  }
+  .lastFrom{
+    border-bottom: 0;
+    padding:0;
+  }
+}
+/deep/.ivu-input{
+  border:none;
+  color:#999;
+  text-align:right;
+}
+/deep/.ivu-select-selection{
+  border:none;
+  padding: 2px 0;
+  color:#999;
+  text-align:right;
+  padding-right:15px;
+}
+/deep/.ivu-form-item{
+  border-bottom:1px solid #dedede;
+  margin-bottom:0;
+  padding: 5px 10px;
+}
+/deep/.ivu-btn-primary{
+  border-color:#18a470;
+}
+/deep/.ivu-form-item-error-tip{
+  position: absolute;
+  top: 73%;
+  right: 38px;
+  line-height: 1;
+  padding-top: 0.375rem;
+  color: #ed4014;
+  z-index: 10;
+  font-size: 12px;
+  text-align:right;
+}
+/deep/.ivu-input:focus{
+  // border-color:#fff;
+}
+/deep/.ivu-upload-drag{
+  border:none;
+}
+/deep/.ivu-date-picker{
+  width:100%;
+}
+/deep/.ivu-select-placeholder{
+  padding-right: 17px !important;
+}
+/deep/.ivu-select-selected-value{
+  padding-right: 17px !important;
+}
+/deep/.ivu-radio-group{
+  width:100%;
+  text-align: right;
+}
+/deep/.ivu-radio-inner{
+  display:none;
+}
+</style>
