@@ -15,7 +15,7 @@
 
       </div>
       <p class="tipsTitle">（长按放大或识别二维码）</p>
-      <Button class="shareBtn" type="primary" size="large">分享</Button>
+      <Button class="shareBtn" type="primary" size="large" @click="useWxShare()">分享</Button>
     </div>
   </div>
 </template>
@@ -25,6 +25,7 @@ import http from '@/libs/http'
 import {URL} from '@/libs/url'
 import common from '@/libs/units.js'
 import QRCode from "qrcodejs2"
+import { wexinShare } from '@/utils/weixinShare.js';
 export default {
   name: 'index',
   data () {
@@ -47,10 +48,55 @@ export default {
     document.title = this.title;
   },
   mounted() {
-    
     this.findShareDetail();
   },
   methods: {
+    useWxShare(){
+      //请求微信配置参数接口（获取签名），由后台给接口给
+      var urls = window.location.href.split('#')[0];
+      console.log(urls, 22222333);
+      // const msg = this.$Message.loading({
+      //     content: 'Loading...',
+      //     duration: 0
+      // });
+      http({
+        //这里是你自己的请求方式、url和data参数
+        method: 'get',
+        url:URL.recordUrl.getWxConfig+'?url='+urls,
+        data: {},
+        headers: {
+          "Content-Type":"application/x-www-form-urlencoded",
+        }
+      }).then((res) => {
+        if(res.code==200){
+          //微信加签
+          console.log("res",res)
+          var obj = {
+            appId: res.data.appid,
+            nonceStr: res.data.nonceStr,
+            signature: res.data.signature,
+            timestamp: res.data.timestamp,
+            jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData']
+          };
+          //分享数据，这段主要是为了在hash模式下分享出去的链接不被浏览器截取，保证完全把链接分享出去
+          var url = window.location.href.split('#')[0];
+          // var shareWxLink = encodeURIComponent(url);加密
+          let shareData = {
+              title: '拜访信息填写', // 分享标题
+              desc:'请填写邀填信息',
+              link: res.data.url,
+              // link: window.location.href,
+              imgUrl: res.data.imgUrl // 分享图标
+          };
+          //引用
+          wexinShare(obj, shareData);
+        }else{
+          this.$Message.info('获取sdk参数失败！');
+        }
+      }).catch(function (err) {
+        console.log(err);
+      });
+    },
     creatQrCode(url) {
         var qrcode = new QRCode(this.$refs.qrCodeUrl, {
             text: url, // 需要转换为二维码的内容

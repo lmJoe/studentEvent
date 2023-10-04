@@ -39,7 +39,21 @@ export var URL = {
             '/jxaxService/teacher/buildInviteRec', //邀请访客
         findShareDetail: apiUrl +
             '/jxaxService/teacher/findShareDetail', //二维码界面
+        getWxConfig: apiUrl +
+            '/jxaxService/wx/getWxConfig', //分享功能获取配置参数
+        listGuardianVisitor: apiUrl +
+            '/jxaxService/visitrec/listGuardianVisitor', //门卫访客列表
+        login: apiUrl +
+            '/jxaxService/schoolServiceUser/login', //登录
+        guardianCheckVisitDetail: apiUrl +
+            '/jxaxService/visitrec/guardianCheckVisitDetail', //访问列表详情
+        guardianCheck: apiUrl +
+            '/jxaxService/visitrec/guardianCheck', //访问列表详情登记按钮
+        listGuardianCheckList: apiUrl +
+            '/jxaxService/eventrec/listGuardianCheckList', //请假明细列表
 
+        guardianCheckout: apiUrl +
+            '/jxaxService/eventrec/guardianCheckout', //请假明细列表登记
 
     }
 };

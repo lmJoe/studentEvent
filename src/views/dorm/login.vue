@@ -14,43 +14,82 @@
                 </Input>
             </FormItem>
             <FormItem>
-                <Button type="primary" class="submitBtn" @click="handleSubmit('formInline')">登入</Button>
+                <Button type="primary" class="submitBtn" @click="login('formInline')">登入</Button>
             </FormItem>
         </Form>
       </div>
     </div>
 </template>
 <script>
-    export default {
-        data () {
-            return {
-                formInline: {
-                    user: '',
-                    password: ''
-                },
-                ruleInline: {
-                    user: [
-                        { required: true, message: '账号不能为空', trigger: 'blur' }
-                    ],
-                    password: [
-                        { required: true, message: '密码不能为空', trigger: 'blur' },
-                        { type: 'string', min: 6, message: '密码不能少于6位', trigger: 'blur' }
-                    ]
-                }
-            }
-        },
-        methods: {
-            handleSubmit(name) {
-                this.$refs[name].validate((valid) => {
-                    if (valid) {
-                        this.$Message.success('Success!');
-                    } else {
-                        this.$Message.error('Fail!');
-                    }
-                })
+import http from '@/libs/http'
+import {URL} from '@/libs/url'
+import common from '@/libs/units.js'
+export default {
+    data () {
+        return {
+            formInline: {
+                user: '',
+                password: ''
+            },
+            ruleInline: {
+                user: [
+                    { required: true, message: '账号不能为空', trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '密码不能为空', trigger: 'blur' },
+                    { type: 'string', min: 6, message: '密码不能少于6位', trigger: 'blur' }
+                ]
             }
         }
+    },
+    methods: {
+        login(){
+          var params = {
+            phone: this.formInline.user,
+            password:this.formInline.password,
+          }
+          console.log("params",params);
+          http({
+            //这里是你自己的请求方式、url和data参数
+            method: 'post',
+            url:URL.recordUrl.login,
+            data:params,
+            //假设后台需要的是表单数据这里你就可以更改
+            headers: {
+              "Content-Type":"application/json",
+            }
+          }).then((res) => {
+            console.log("res",res)
+            if(res.code==200){
+              this.$Message.info(res.msg);
+              setTimeout(() => {
+                this.$router.push({
+                  path:'guardsys',
+                  query:{
+                    roleType:res.data.roleType,
+                    schoolId:res.data.schoolId,
+                    id:res.data.id
+                  }
+                })
+              }, 1500);
+            }else{
+              this.$Message.info(res.msg);
+            }
+          }).catch(function (err) {
+            console.log(err);
+          });
+        },
+        handleSubmit(name) {
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                    this.$Message.success('Success!');
+                } else {
+                    this.$Message.error('Fail!');
+                }
+            })
+        }
     }
+}
 </script>
 <style scoped lang="less">
 .loginContent{
@@ -89,9 +128,6 @@
   font-size:x-large;
   width:50px;
 }
-/deep/.ivu-input{
-  border: 0.0625rem solid rgba(255,135,1);
-}
 /deep/.ivu-btn-primary{
   width:100%;
   height:50px;
@@ -102,6 +138,15 @@
    border: 0.0625rem solid rgba(255,135,1);
 }
 /deep/.ivu-form-item-error .ivu-input:hover{
+  border-color:rgba(255,135,1);
+}
+/deep/.ivu-form-item-error .ivu-input{
+  border-color:rgba(255,135,1);
+}
+/deep/.ivu-form-item-error .ivu-input-group-prepend{
+  border:1px solid rgba(255,135,1);
+}
+/deep/.ivu-input:hover{
   border-color:rgba(255,135,1);
 }
 </style>

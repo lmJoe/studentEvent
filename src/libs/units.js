@@ -144,6 +144,46 @@ const common = {
         let newDateMonth = (d.getMonth() + 1) < 10 ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)
         let newDateDay = d.getDate() + '' < 10 ? '0' + d.getDate() + '' : d.getDate() + ''
         return newDateYear + '-' + newDateMonth + '-' + newDateDay + ' ' + this.clock
-    }
+    },
+    //根据yy-mm-dd hh:mm:ss 获取hh:mm:ss
+    getHmsecond(dateStr) {
+        var date = new Date(dateStr);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var time = hours + ":" + (minutes < 10 ? "0" : "") + minutes;
+        return time;
+    },
+    //根据yy-mm-dd hh:mm:ss 获取mm-dd hh:mm
+    getHmsecond1(dateStr) {
+        var date = new Date(dateStr);
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) { month = "0" + month; }
+        if (strDate >= 0 && strDate <= 9) { strDate = "0" + strDate; }
+
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var time = month + '-' + strDate + " " + hours + ":" + (minutes < 10 ? "0" : "");
+        return time;
+    },
+    getNowFormatDate() {
+        var date = new Date();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+
+        var h = date.getHours();
+        var m = date.getMinutes();
+        var s = date.getSeconds();
+
+        if (month >= 1 && month <= 9) { month = "0" + month; }
+        if (strDate >= 0 && strDate <= 9) { strDate = "0" + strDate; }
+        if (h >= 0 && h <= 9) { h = "0" + h; }
+        if (m >= 0 && m <= 9) { m = "0" + m; }
+        if (s >= 0 && s <= 9) { s = "0" + s; }
+
+        var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " " + h + ":" + m + ":" + s;
+        return currentdate;
+    },
+
 }
 export default common

@@ -92,7 +92,6 @@ export default {
       visitReason:'',//来访目的
       visitorRecordList:[],
       visitorName:'',//登记人
-      teacherName:'',//班主任
       sfzType:'',//身份
       visitTime:'',//访问时间
     }
@@ -151,7 +150,6 @@ export default {
             this.visitorRecordList.push(visitorRecordList[i].visitName)
           }
           this.visitorName = res.data.event.visitorName;//登记人
-          this.teacherName = res.data.event.teacherName;
           this.sfzType = res.data.event.visitorIdentity;
           this.agreeStat = res.data.event.approveStr=="未审批"?1:res.data.event.approveStr=="同意"?2:res.data.event.approveStr=="拒绝"?3:""
         }else{

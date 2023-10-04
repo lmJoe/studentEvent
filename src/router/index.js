@@ -51,7 +51,28 @@ const routes = [{
         name: 'login',
         component: resolve => (require(['@/views/dorm/login'], resolve))
 
+    }, {
+        path: "/guardsys",
+        name: 'guardsys',
+        component: resolve => (require(['@/views/guard/guardsys'], resolve))
+
+    }, {
+        path: "/todayVisit",
+        name: 'todayVisit',
+        component: resolve => (require(['@/views/guard/todayVisit'], resolve))
+
+    }, {
+        path: "/todayvisitdetail",
+        name: 'todayvisitdetail',
+        component: resolve => (require(['@/views/guard/todayvisitdetail'], resolve))
+
+    }, {
+        path: "/asklist",
+        name: 'asklist',
+        component: resolve => (require(['@/views/guard/asklist'], resolve))
+
     },
+
     // {
     //     // 登录之后的选择页
     //     path: "/startNext",
