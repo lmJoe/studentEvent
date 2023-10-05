@@ -17,6 +17,9 @@
       <p class="tipsTitle">（长按放大或识别二维码）</p>
       <Button class="shareBtn" type="primary" size="large" @click="useWxShare()">分享</Button>
     </div>
+    <div class="shareBg" v-show="shareDialog">
+        <img :src="shareImg" alt="">
+      </div>
   </div>
 </template>
 
@@ -25,6 +28,7 @@ import http from '@/libs/http'
 import {URL} from '@/libs/url'
 import common from '@/libs/units.js'
 import QRCode from "qrcodejs2"
+import shareImg from '@/assets/imgs/shareImg.png';//审批拒绝
 import { wexinShare } from '@/utils/weixinShare.js';
 export default {
   name: 'index',
@@ -37,6 +41,10 @@ export default {
       teacherName:'',
       startTime:'',
       endTime:'',
+      linkimgUrl:'',
+      inviteUrl:'',
+      shareImg:shareImg,
+      shareDialog:false,
     }
   },
   created(){
@@ -70,7 +78,7 @@ export default {
       }).then((res) => {
         if(res.code==200){
           //微信加签
-          console.log("res",res)
+          console.log("res-----",res)
           var obj = {
             appId: res.data.appid,
             nonceStr: res.data.nonceStr,
@@ -84,12 +92,18 @@ export default {
           let shareData = {
               title: '拜访信息填写', // 分享标题
               desc:'请填写邀填信息',
-              link: res.data.url,
+              link: this.erweimaUrl,
               // link: window.location.href,
-              imgUrl: res.data.imgUrl // 分享图标
+              imgUrl: this.linkimgUrl, // 分享图标
+              
           };
           //引用
-          wexinShare(obj, shareData);
+          // wexinShare(obj, shareData,callback);
+          wexinShare(obj, shareData,(res)=>{
+            console.log("分享实现调用",res);
+            //弹起分享窗口
+            this.shareDialog = true;
+          })
         }else{
           this.$Message.info('获取sdk参数失败！');
         }
@@ -118,13 +132,14 @@ export default {
           "Content-Type":"application/x-www-form-urlencoded",
         }
       }).then((res) => {
-        console.log("res",res)
         if(res.code==200){
-          console.log("返回数据",res)
+          console.log("返回数据----",res)
           this.teacherName = res.data.inviteInfo.teacherName;
           this.startTime = res.data.inviteInfo.startTime;
           this.endTime = res.data.inviteInfo.endTime;
           var erweimaUrl = res.data.inviteUrl;
+          this.erweimaUrl = res.data.inviteUrl;
+          this.linkimgUrl = res.data.inviteLinkPic;
           this.creatQrCode(erweimaUrl)
         }else{
           this.$Message.info(res.msg)
@@ -198,6 +213,23 @@ export default {
       height:150px;
       border:1px solid #dedede;
       margin:20px auto 0;
+    }
+  }
+  .shareBg{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    img{
+      width:88%;
+      position:absolute;
+      top:20px;
+      right:10px;
+      bottom:0;
     }
   }
 }

@@ -62,8 +62,8 @@
         <!-- <TimelineItem><a href="#">查看更多</a></TimelineItem> -->
       </Timeline>
     </div>
-    <Button type="primary" class="cancel" v-if="roleId==1||agreeStat!==1" :disabled="agreeStat==1?false:true" @click="handleCancel()">撤回</Button>
-    <div v-else-if="roleId==2||agreeStat==1" class="spDom">
+    <Button type="primary" class="cancel" v-if="roleId==1&&agreeStat==1" :disabled="agreeStat==1?false:true" @click="handleCancel()">撤回</Button>
+    <div v-if="roleId==2&&agreeStat==1" class="spDom">
       <Button type="primary" class="aggreeBtn" @click="aggreeBtn(1)">同意</Button>
       <Button type="success" class="rejectBtn" ghost @click="aggreeBtn(2)">驳回</Button>
     </div>
@@ -94,14 +94,15 @@ export default {
       visitorName:'',//登记人
       sfzType:'',//身份
       visitTime:'',//访问时间
+      eventStatus:'',//订单状态
     }
   },
   created(){
     document.title = this.title;
-    this.eventId = this.$route.query.eventId;
-    this.studentId = this.$route.query.studentId;
-    this.optPhone = this.$route.query.optPhone;
-    this.roleId = this.$route.query.roleType;
+    this.eventId = common.getQueryVariable("eventId");
+    this.studentId = Number(common.getQueryVariable("studentId"));
+    this.optPhone = Number(common.getQueryVariable("optPhone"));
+    this.roleId = common.getQueryVariable("roleType");
 
     this.getDetailFun()
   },
@@ -152,6 +153,8 @@ export default {
           this.visitorName = res.data.event.visitorName;//登记人
           this.sfzType = res.data.event.visitorIdentity;
           this.agreeStat = res.data.event.approveStr=="未审批"?1:res.data.event.approveStr=="同意"?2:res.data.event.approveStr=="拒绝"?3:""
+          this.eventStatus = res.data.event.eventStatus;
+          console.log("agreeStat",this.agreeStat)
         }else{
           this.$Message.info(res.msg)
         }

@@ -122,7 +122,7 @@ const common = {
         return (day ? day + "天" : '') + (hr ? hr + "小时" : '') + (min ? min + "分钟" : '');
 
     },
-    //yy-mm-dd hh-mm-ss
+    //yy-mm-dd hh-mm-ss 13位时间戳转换
     shijianc(time) {
         var date = new Date(time)
         var Y = date.getFullYear() + '-'

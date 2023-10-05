@@ -23,11 +23,11 @@
       <FormItem label="选择时间">
         <Row>
           <Col span="11">
-              <DatePicker type="datetime" placeholder="选择起始时间" :start-date="new Date()" v-model="formItemTime.startTime" format="yyyy-MM-dd HH:mm" @on-ok="choseStartTime()" @on-clear="clearStartTime()"></DatePicker>
+              <DatePicker type="datetime" placeholder="选择起始时间" :start-date="new Date()" :disabled="isdisAbled" v-model="formItemTime.startTime" format="yyyy-MM-dd HH:mm" @on-ok="choseStartTime()" @on-clear="clearStartTime()"></DatePicker>
           </Col>
           <Col span="2" style="text-align: center">-</Col>
           <Col span="11">
-              <DatePicker type="datetime" placeholder="选择结束时间" :start-date="new Date()" v-model="formItemTime.endTime" format="yyyy-MM-dd HH:mm" @on-ok="choseEndTime()" @on-clear="clearEndTime()"></DatePicker>
+              <DatePicker type="datetime" placeholder="选择结束时间" :start-date="new Date()" :disabled="isdisAbled" v-model="formItemTime.endTime" format="yyyy-MM-dd HH:mm" @on-ok="choseEndTime()" @on-clear="clearEndTime()"></DatePicker>
           </Col>
         </Row>
       </FormItem>
@@ -81,16 +81,42 @@ export default {
         }
       ],
       formItemPer:{
-        name:'马小乔',
-        studentId:111,
-      }
+        name:'',
+        studentId:'',
+      },
+      roleType:'',//角色 家长或老师
+      eventType:1,//1-拜访，2-邀约
+      inviteCount:0,//邀约限制人数
+      isdisAbled:false,//根据邀约或者拜访来判断时间是否可以选择
+      inviteId:'',
     }
   },
   created(){
     document.title = this.title;
-    // this.studentId = this.$route.query.studentId;
-    this.optPhone = this.$route.query.optPhone;
-    // this.optPhone = this.$route.query.optPhone;
+    this.optPhone = common.getQueryVariable("optPhone");
+    if(common.getQueryVariable("inviteId")){
+      this.inviteId = Number(common.getQueryVariable("inviteId"));
+    }
+    if(common.getQueryVariable("startTime")){
+      this.isdisAbled = true;
+      this.formItemTime.startTime = common.shijianc(Number(common.getQueryVariable("startTime")));//主动邀约开始时间
+    }
+    if(common.getQueryVariable("endTime")){
+      this.isdisAbled = true;
+      this.formItemTime.endTime = common.shijianc(Number(common.getQueryVariable("endTime")));//主动邀约结束时间
+    }
+    if(common.getQueryVariable("inviteCount")){
+      this.inviteCount = common.getQueryVariable("inviteCount");//主动邀约人数限制
+    }
+    if(common.getQueryVariable("roleType")){
+      this.roleType = common.getQueryVariable("roleType");//角色 判断家长或老师
+    }
+    if(common.getQueryVariable("eventType")){
+      this.eventType = common.getQueryVariable("eventType");//1-拜访，2-邀约
+    }
+    if(common.getQueryVariable("studentId")){
+      this.formItemPer.studentId = common.getQueryVariable("studentId");//主动访问学生id
+    }
   },
   activated (){
     document.title = this.title;
@@ -105,13 +131,15 @@ export default {
         visitorName: this.formItemList[0].visitName,
         visitorPhone: this.formItemList[0].phone,
         visitorIdentity: this.formItemList[0].visitorIdentity,//访客身份证
-        startTime: common.changeTimeFormat(this.formItemTime.startTime),
-        endTime: common.changeTimeFormat(this.formItemTime.endTime),
+        startTime:common.getQueryVariable("startTime")?this.formItemTime.startTime:common.changeTimeFormat(this.formItemTime.startTime),
+        endTime:common.getQueryVariable("endTime")?this.formItemTime.endTime:common.changeTimeFormat(this.formItemTime.endTime),
         visitReason: this.formItemMsg.visitReason,//来访目的
         vistDestination: this.formItemMsg.vistDestination,//来访地址
         visitorRecordList:this.formItemList,
-        studentId:157441,
+        studentId:this.formItemPer.studentId,
         optPhone:this.optPhone,
+        inviteId:this.inviteId,
+        eventType:this.eventType
       }
       console.log("params",params);
       http({
@@ -129,7 +157,8 @@ export default {
           console.log("res",res)
           this.$Message.info(res.msg);
           setTimeout(() => {
-            this.$router.go(-1);
+            var url = window.location.protocol+'//'+window.location.hostname + '/event/index.html#/guestIndex?roleType='+this.roleType+'&studentId='+this.formItemPer.studentId+'&openId='+this.token+'&phone='+this.optPhone;
+            location.replace(url)
           }, 1500);
         }else{
           this.$Message.info(res.msg);
@@ -140,11 +169,18 @@ export default {
     },
     //添加同行人
     addPer(){
-      this.formItemList.push({
+      console.log("this.formItemList.length",this.formItemList.length+1)
+      console.log("this.inviteCount",this.inviteCount)
+      if(this.inviteCount!==0&&((this.formItemList.length+1)>this.inviteCount)){
+        this.$Message.info('已超出访问人数上限');
+      }else{
+        this.formItemList.push({
           visitName:'',
           phone:'',
           visitorIdentity:'',
         })
+      }
+      
     },
     shureSubmit(){
       var regExp = new RegExp("^1[3578]\\d{9}$");

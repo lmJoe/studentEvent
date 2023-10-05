@@ -44,6 +44,7 @@ export default {
     document.title = this.title;
     //获取链接中的参数
     this.optPhone = common.getQueryVariable("phone");//家长手机
+    this.studentId = common.getQueryVariable("studentId");//家长手机
     this.roleId = common.getQueryVariable("roleType");//角色id
     // console.log("1",this.optPhone,this.roleId)
     this.getConfig()
@@ -93,6 +94,7 @@ export default {
         path:'guestadd',
         query:{
           optPhone:this.optPhone,
+          studentId:this.studentId
         }
       })
     },
@@ -102,7 +104,7 @@ export default {
         query:{
           studentId:studentId,
           optPhone:this.optPhone,
-          roleId:this.roleId,
+          roleType:this.roleId,
           eventId:id
         }
       })
