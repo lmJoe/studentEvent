@@ -66,12 +66,7 @@ const routes = [{
         name: 'todayvisitdetail',
         component: resolve => (require(['@/views/guard/todayvisitdetail'], resolve))
 
-    }, {
-        path: "/asklist",
-        name: 'asklist',
-        component: resolve => (require(['@/views/guard/asklist'], resolve))
-
-    },
+    }
 
     // {
     //     // 登录之后的选择页

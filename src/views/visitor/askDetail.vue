@@ -12,7 +12,7 @@
         <p class="firstMsg">审批编号：<span>{{flowNo}}</span></p>
         <p class="firstMsg">请假类型：<span>{{eventTypeStr}}</span></p>
         <div class="step"> 
-          <p class="stepAskTime">请假时长：{{eventTotalDay}}天</p>
+          <p class="stepAskTime">请假时长：{{eventTotalDay}}</p>
           <Timeline class="stepBox">
                 <TimelineItem color="#999">{{eventStartTime}}</TimelineItem>
                 <TimelineItem color="#999">{{eventEndTime}}</TimelineItem>
@@ -28,7 +28,11 @@
         </div>
 
       </div>
-      <img class="statusImg" :src='agreeStat==1?status1:agreeStat==2?status2:agreeStat==3?status3:""' alt="">
+      <img class="statusImg" :src='agreeStat==0?status1:
+                                  agreeStat==1?status2:
+                                  agreeStat==2?status3:
+                                  agreeStat==3?status4:
+                                  ""' alt="">
     </div>
     <div class="cardStep">
       <Timeline>
@@ -39,10 +43,13 @@
              <div>
               <p class="doThing"><span>{{item.optPersonTypeStr}}</span><span class="time">{{item.createTime}}</span></p>
               <p class="namedetail">
-                {{(item.approveStr=='' || item.approveStr==null)&&index==0 ? '家长':item.refPersonName}}
+                {{(item.currentStatus=='' || item.currentStatus==null)&&index==0 ? '家长':item.refPersonName}}
                 {{
-                  (item.approveStr=='' || item.approveStr==null) ? ' ':
-                  '('+item.approveStr +')'
+                  (item.currentStatus=='' || item.currentStatus==null) ? ' ':
+                  item.currentStatus==0 ? '':
+                  item.currentStatus==1 ? '(已同意)':
+                  item.currentStatus==2 ? '(已拒绝)':
+                  item.currentStatus==3 ? '(已撤回)':''
                 }}
               </p>
             </div>
@@ -50,8 +57,12 @@
         <!-- <TimelineItem><a href="#">查看更多</a></TimelineItem> -->
       </Timeline>
     </div>
-    <Button type="primary" class="backBtn" v-if="roleId==1||agreeStat!==1" :disabled="agreeStat==1?false:true" @click="askBtn()">撤回</Button>
-    <div v-else-if="roleId==2||agreeStat==1" class="spDom">
+    <Button type="primary" class="backBtn" 
+            v-if="roleId==1&&agreeStat==0" 
+            :disabled="agreeStat==0?false:true" 
+            @click="askBtn()">撤回
+    </Button>
+    <div v-if="roleId==2&&agreeStat==0" class="spDom">
       <Button type="primary" class="aggreeBtn" @click="aggreeBtn(1)">同意</Button>
       <Button type="success" class="rejectBtn" ghost @click="aggreeBtn(2)">拒绝</Button>
     </div>
@@ -66,6 +77,7 @@ import common from '@/libs/units.js'
 import status1 from '@/assets/imgs/status1.png';//审批中
 import status2 from '@/assets/imgs/status2.png';//审核通过
 import status3 from '@/assets/imgs/status3.png';//审批拒绝
+import status4 from '@/assets/imgs/status4.png';//审批拒绝
 import head from '@/assets/imgs/head.png';//审批拒绝
 export default {
   name: 'index',
@@ -75,6 +87,7 @@ export default {
       status1:status1,
       status2:status2,
       status3:status3,
+      status4:status4,
       studentId:'',
       id:'',
       studentName:'',//学生姓名
@@ -97,11 +110,21 @@ export default {
   },
   created(){
     document.title = this.title;
-    this.studentId = this.$route.query.studentId;
-    this.id = this.$route.query.id;
-    this.optPhone = this.$route.query.optPhone;
-    this.roleId = this.$route.query.roleId;
-    this.token = this.$route.query.token;
+    if(common.getQueryVariable("roleType")){
+      this.roleId = common.getQueryVariable("roleType");
+    }
+     if(common.getQueryVariable("optPhone")){
+      this.optPhone = common.getQueryVariable("optPhone");
+    }
+     if(common.getQueryVariable("studentId")){
+      this.studentId = common.getQueryVariable("studentId");
+    }
+     if(common.getQueryVariable("openId")){
+      this.openId = common.getQueryVariable("openId");
+    }
+    if(common.getQueryVariable("id")){
+      this.id = common.getQueryVariable("id");
+    }
     this.getDetailFun()
   },
   activated (){
@@ -138,7 +161,7 @@ export default {
           this.temperatureStatus = res.data.event.temperatureStatus==1?'体温正常':'体温异常',
           this.temperature = res.data.event.temperature;
           this.spList = res.data.eventHistory;
-          this.agreeStat =  res.data.event.approveStr=="未审批"?1:res.data.event.approveStr=="同意"?2:res.data.event.approveStr=="拒绝"?3:""
+          this.agreeStat =  res.data.event.currentStatus;
         }else{
           this.$Message.info(res.msg)
         }
@@ -202,10 +225,10 @@ export default {
             if(this.roleId==undefined){
               this.roleId = common.getQueryVariable("roleType");//角色id
             }
-            if(this.token==undefined){
-              this.token = common.getQueryVariable("openId");//openid
+            if(this.openId==undefined){
+              this.openId = common.getQueryVariable("openId");//openid
             }
-            var url = window.location.protocol+'//'+window.location.hostname + '/event/index.html#/index?roleType='+this.roleId+'&studentId='+this.studentId+'&openId='+this.token+'&phone='+this.optPhone;
+            var url = window.location.protocol+'//'+window.location.hostname + '/event/index.html#/index?roleType='+this.roleId+'&studentId='+this.studentId+'&openId='+this.openId+'&phone='+this.optPhone;
             console.log("url",url)
             location.replace(url)
           }, 1500);
@@ -356,6 +379,8 @@ export default {
     left:0;
     right:0;
     margin:0 auto;
+    height:45px;
+    color:#fff;
   }
   .spDom{
     width:92%;

@@ -6,6 +6,7 @@ import common from '@/libs/units.js'
 
 //请求Mock地址封装
 axios.defaults.timeout = 100000;
+axios.defaults.baseURL = '/jxaxService';
 //请求方法封装
 const http = options => {
     var that = this;

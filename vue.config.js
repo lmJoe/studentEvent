@@ -1,5 +1,4 @@
 var Version = new Date().getTime();
-const path = require('path');
 module.exports = {
     devServer: {
         //设置主机地址
@@ -9,17 +8,17 @@ module.exports = {
         //自动打开浏览器
         open: true,
         // //配置代理
-        // ​proxy: {​
-        //     'api': { //配置名为'api'的代理
-        //         target: 'https://xskwx.zjhuaxuntong.com', //请求后台服务端的IP，即代理转发的目标地址
-        //         ​pathRewrite: { '^/api': '' }, //重写请求路径
-        //         ​changeOrigin: true //开启跨域
-
-        //     }​
-        // },
-        // headers: {
-        //     'Access-Control-Allow-Origin': '*'
-        // }
+        proxy: { // 配置跨域
+            '/jxaxService': {
+                target: 'https://xskwx.zjhuaxuntong.com',
+                changOrigin: true, //是否跨域
+                logLevel: 'debug',
+                secure: false,
+                // pathRewrite: {
+                //     '^/api': '' //需要rewrite的,
+                // }
+            },
+        },
     },
     publicPath: '',
     productionSourceMap: false,

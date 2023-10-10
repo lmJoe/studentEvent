@@ -16,7 +16,10 @@
               <TimelineItem>{{common.shijianc(item.eventStartTime)}}</TimelineItem>
               <TimelineItem>{{common.shijianc(item.eventEndTime)}}</TimelineItem>
           </Timeline>
-          <img class="statusImg" :src="item.approveStatus==0?status1:item.approveStatus==1?status2:status3" alt="">
+          <img class="statusImg" :src="item.currentStatus==0?status1:
+                                        item.currentStatus==1?status2:
+                                        item.currentStatus==2?status3:
+                                        status4" alt="">
         </div>
     </Card>
     <div class="nodata" v-if="isNodata">
@@ -34,7 +37,8 @@ import common from '@/libs/units.js'
 import status1 from '@/assets/imgs/status1.png';//审批中
 import status2 from '@/assets/imgs/status2.png';//审核通过
 import status3 from '@/assets/imgs/status3.png';//审批拒绝
-import nodata from '@/assets/imgs/no-data.png';//审批拒绝
+import status4 from '@/assets/imgs/status4.png';//订单撤回
+import nodata from '@/assets/imgs/no-data.png';//没有数据
 export default {
   name: 'index',
   data () {
@@ -43,6 +47,7 @@ export default {
       status1:status1,
       status2:status2,
       status3:status3,
+      status4:status4,
       studentName:'',
       time:'',
       startTime:'',
@@ -132,8 +137,8 @@ export default {
           studentId:studentId,
           id:id,
           optPhone:this.optPhone,
-          roleId:this.roleId,
-          token:this.token,
+          roleType:this.roleId,
+          openId:this.token,
         }
       })
     }
@@ -170,6 +175,7 @@ export default {
     position:fixed;
     bottom:25px;
     background:#18a470;
+    height:45px;
   }
   .nodata{
     img{

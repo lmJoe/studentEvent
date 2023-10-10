@@ -150,6 +150,7 @@ export default {
     position:fixed;
     bottom:25px;
     background:#18a470;
+    height:45px;
   }
 }
 /deep/.ivu-btn-primary{

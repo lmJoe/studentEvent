@@ -10,6 +10,8 @@
         "axios": "^0.19.2",
         "core-js": "^3.32.2",
         "countup.js": "^2.8.0",
+        "http-proxy-middleware": "^2.0.6",
+        "image-conversion": "^2.1.1",
         "qrcodejs2": "0.0.2",
         "view-design": "^4.7.0",
         "vue": "^2.7.14",

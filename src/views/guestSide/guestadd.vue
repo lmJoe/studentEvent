@@ -23,11 +23,18 @@
       <FormItem label="选择时间">
         <Row>
           <Col span="11">
-              <DatePicker type="datetime" placeholder="选择起始时间" :start-date="new Date()" :disabled="isdisAbled" v-model="formItemTime.startTime" format="yyyy-MM-dd HH:mm" @on-ok="choseStartTime()" @on-clear="clearStartTime()"></DatePicker>
+              <DatePicker type="datetime" placeholder="选择起始时间" :start-date="new Date()" :disabled="isdisAbled" v-model="formItemTime.startTime" format="yyyy-MM-dd HH:mm" 
+              @on-ok="choseStartTime()" 
+              @on-change="choseStartTime()" 
+              @on-clear="clearStartTime()"
+              ></DatePicker>
           </Col>
           <Col span="2" style="text-align: center">-</Col>
           <Col span="11">
-              <DatePicker type="datetime" placeholder="选择结束时间" :start-date="new Date()" :disabled="isdisAbled" v-model="formItemTime.endTime" format="yyyy-MM-dd HH:mm" @on-ok="choseEndTime()" @on-clear="clearEndTime()"></DatePicker>
+              <DatePicker type="datetime" placeholder="选择结束时间" :start-date="new Date()" :disabled="isdisAbled" v-model="formItemTime.endTime" format="yyyy-MM-dd HH:mm"
+              @on-ok="choseEndTime()" 
+              @on-change="choseEndTime()" 
+              @on-clear="clearEndTime()"></DatePicker>
           </Col>
         </Row>
       </FormItem>
@@ -37,7 +44,7 @@
           <Input v-model="formItemMsg.visitReason" maxlength="10" placeholder="请输入（最多10个字）"></Input>
       </FormItem>
       <FormItem label="到访地址">
-          <Input v-model="formItemMsg.vistDestination" type="textarea" maxlength="20" placeholder="请输入（最多20个字）"></Input>
+          <Input v-model="formItemMsg.visitDestination" type="textarea" maxlength="20" placeholder="请输入（最多20个字）"></Input>
       </FormItem>
     </Form>
     <Form :model="formItemPer" :label-width="90" v-if="isStudent">
@@ -71,7 +78,7 @@ export default {
       },
       formItemMsg:{
         visitReason:'',//访客目的
-        vistDestination:'',//到访地址
+        visitDestination:'',//到访地址
       },
       formItemList:[
         {
@@ -134,7 +141,7 @@ export default {
         startTime:common.getQueryVariable("startTime")?this.formItemTime.startTime:common.changeTimeFormat(this.formItemTime.startTime),
         endTime:common.getQueryVariable("endTime")?this.formItemTime.endTime:common.changeTimeFormat(this.formItemTime.endTime),
         visitReason: this.formItemMsg.visitReason,//来访目的
-        vistDestination: this.formItemMsg.vistDestination,//来访地址
+        visitDestination: this.formItemMsg.visitDestination,//来访地址
         visitorRecordList:this.formItemList,
         studentId:this.formItemPer.studentId,
         optPhone:this.optPhone,
@@ -215,7 +222,7 @@ export default {
         this.$Message.info('访客目的不能为空');
         return;
       }
-      if(!this.formItemMsg.vistDestination){
+      if(!this.formItemMsg.visitDestination){
         this.$Message.info('到访地址不能为空');
         return;
       }
@@ -235,6 +242,9 @@ export default {
         if(startTime>endTime){
           this.$Message.info('结束时间不能小于开始时间');
           this.formItemTime.startTime = '';
+        }else if(startTime==endTime){
+          this.$Message.info('开始时间与结束时间一致');
+          this.formItemTime.startTime = '';
         }
       }
     },
@@ -245,6 +255,9 @@ export default {
         var endTime = this.formItemTime.endTime.getTime();
         if(startTime>endTime){
           this.$Message.info('结束时间不能小于开始时间');
+          this.formItemTime.endTime = '';
+        }else if(startTime==endTime){
+          this.$Message.info('开始时间与结束时间一致');
           this.formItemTime.endTime = '';
         }
       }
@@ -263,6 +276,7 @@ export default {
 <style scoped lang="less">
 .guestAddPage{
   background:#fff;
+  padding-bottom:150px;
   .dataTitle{
     color:#000;
     font-weight: 600;
@@ -317,6 +331,7 @@ export default {
   left: 0;
   right: 0;
   margin: 0 auto;
+  height:45px;
 }
 /deep/.ivu-input{
   border:none;
@@ -370,5 +385,8 @@ export default {
 }
 /deep/.ivu-radio-inner{
   display:none;
+}
+/deep/.ivu-select-dropdown{
+  left:-51px;
 }
 </style>
