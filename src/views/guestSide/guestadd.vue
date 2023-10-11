@@ -166,6 +166,7 @@ export default {
           setTimeout(() => {
             var url = window.location.protocol+'//'+window.location.hostname + '/event/index.html#/guestIndex?roleType='+this.roleType+'&studentId='+this.formItemPer.studentId+'&openId='+this.token+'&phone='+this.optPhone;
             location.replace(url)
+            
           }, 1500);
         }else{
           this.$Message.info(res.msg);
@@ -220,10 +221,6 @@ export default {
       }
       if(!this.formItemMsg.visitReason){
         this.$Message.info('访客目的不能为空');
-        return;
-      }
-      if(!this.formItemMsg.visitDestination){
-        this.$Message.info('到访地址不能为空');
         return;
       }
       this.addAskFun();

@@ -16,7 +16,7 @@ export var URL = {
         getDetail: '/eventrec/findDetail', //详情
         eventRollback: '/eventrec/eventRollback', //撤销
         approve: '/eventrec/approve', //同意/拒绝
-        visitorlist: '/visitrec/listVisitRecByTeacherPhone', //访客列表
+        visitorlist: '/visitrec/listVisitRecByTeacherPhone', //访客列表角色列表为2
         visitoradd: '/visitrec/add', //访客预约
         findDetail: '/visitrec/findDetail', //访客审批详情
         visiteventRollback: '/visitrec/eventRollback', //访客详情撤回
@@ -30,6 +30,7 @@ export var URL = {
         guardianCheck: '/visitrec/guardianCheck', //访问列表详情登记按钮
         listGuardianCheckList: '/eventrec/listGuardianCheckList', //请假明细列表
         guardianCheckout: '/eventrec/guardianCheckout', //请假明细列表登记
+        visitrecList: '/visitrec/list', //访客端列表角色为1时
 
     }
 };

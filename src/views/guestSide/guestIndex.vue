@@ -63,10 +63,16 @@ export default {
       //     content: 'Loading...',
       //     duration: 0
       // });
+      var url;
+      if(this.roleId==1){
+        url = URL.recordUrl.visitrecList;
+      }else{
+        url = URL.recordUrl.visitorlist;
+      }
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'get',
-        url:URL.recordUrl.visitorlist+'?phone='+this.optPhone,
+        url:url+'?phone='+this.optPhone,
         data: {},
         headers: {
           "Content-Type":"application/x-www-form-urlencoded",
@@ -94,7 +100,8 @@ export default {
         path:'guestadd',
         query:{
           optPhone:this.optPhone,
-          studentId:this.studentId
+          studentId:this.studentId,
+          roleType:this.roleId
         }
       })
     },

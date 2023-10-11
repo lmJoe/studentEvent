@@ -29,7 +29,7 @@
             </template>
              <div>
               <p class="doThing"><span>{{item.visitName}}</span><span class="time"  @click="hasVisit(item.eventId,item.id)">{{item.btnTips}}</span></p>
-              <p class="phone"><span>{{item.phone}}</span><Icon type="ios-call" color="#22b78e" /></p>
+              <p class="phone"><span>{{item.phone}}</span>
               <Tag class="tag">预约到访</Tag>
             </div>
         </TimelineItem>

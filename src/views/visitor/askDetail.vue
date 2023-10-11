@@ -19,20 +19,21 @@
             </Timeline>
         </div>
         <div class="askMsg">
-          <p><span>请假事由：</span>{{eventReason}}</p>
-          <p><span>体温情况：</span>{{temperatureStatus}}</p>
-          <p><span>体温：</span>{{temperature}}</p>
+          <p><span class="left">请假事由：</span><span class="right">{{eventReason}}</span></p>
+          <p><span class="left">体温情况：</span><span class="right">{{temperatureStatus}}</span></p>
+          <p><span class="left">体温：</span><span class="right">{{temperature}}</span></p>
         </div>
         <div class="askImages">
           <img v-for="(item,index) in eventPicPath" :key="index" :src="item" />
         </div>
 
       </div>
-      <img class="statusImg" :src='agreeStat==0?status1:
-                                  agreeStat==1?status2:
-                                  agreeStat==2?status3:
-                                  agreeStat==3?status4:
-                                  ""' alt="">
+      <img class="statusImg" 
+          :src='agreeStat==0?status1:
+          agreeStat==1?status2:
+          agreeStat==2?status3:
+          agreeStat==3?status4:
+          ""' alt="">
     </div>
     <div class="cardStep">
       <Timeline>
@@ -45,11 +46,11 @@
               <p class="namedetail">
                 {{(item.currentStatus=='' || item.currentStatus==null)&&index==0 ? '家长':item.refPersonName}}
                 {{
-                  (item.currentStatus=='' || item.currentStatus==null) ? ' ':
-                  item.currentStatus==0 ? '':
+                  
                   item.currentStatus==1 ? '(已同意)':
                   item.currentStatus==2 ? '(已拒绝)':
-                  item.currentStatus==3 ? '(已撤回)':''
+                  item.currentStatus==3 ? '(已撤回)':
+                  item.currentStatus==0&&index!==0 ? '(未审批)':''
                 }}
               </p>
             </div>
@@ -308,12 +309,15 @@ export default {
           padding-left:10px;
           display: flex;
           justify-content: start;
-          align-items: center;
-          span{
+          align-items: flex-start;
+          .left{
             color:#545f68;
             text-align:right;
-            width:70px;
+            width:25%;
             display:block;
+          }
+          .right{
+            width:75%
           }
         }
       }

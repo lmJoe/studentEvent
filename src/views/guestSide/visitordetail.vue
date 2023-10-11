@@ -2,7 +2,13 @@
   <div class="visitorPage">
     <div class="title">
         <h3>{{visitorName}}提交的访客审批</h3>
-        <p>{{approveStr}}</p>
+        <p :class="[currentStatus==0?'needStyle':
+                    currentStatus==1?'argeeStyle':
+                    currentStatus==2?'rejectStyle':'']">{{
+            currentStatus==0?'未审批':
+            currentStatus==1?'已同意':
+            currentStatus==2?'已拒绝':''
+            }}</p>
     </div>
     <div class="content">
       <List>
@@ -49,20 +55,37 @@
                 <span class="name">{{index==0?'家':item.refPersonName.charAt(0)}}</span>
             </template>
              <div>
-              <p class="doThing"><span>{{item.optPersonTypeStr}}</span><span class="time">{{item.createTime}}</span></p>
+              <div class="doThing">
+                  <div>
+                    <span>{{item.optPersonTypeStr}}</span>
+                    <span :class="['statusStyle',currentStatus==0?'needStyle':
+                    currentStatus==1?'argeeStyle':
+                    currentStatus==2?'rejectStyle':'']">
+                      {{
+                        item.currentStatus==1 ? '(已同意)':
+                        item.currentStatus==2 ? '(已拒绝)':
+                        item.currentStatus==3 ? '(已撤回)':
+                        item.currentStatus==0&&index!==0 ? '(未审批)':''
+                      }}
+                    </span>
+                  </div>
+                  <span class="time">{{item.createTime}}</span>
+                </div>
               <p class="namedetail">
-                {{(item.approveStr=='' || item.approveStr==null)&&index==0 ? '家长':item.refPersonName}}
-                {{
-                  (item.approveStr=='' || item.approveStr==null) ? ' ':
-                  '('+item.approveStr +')'
-                }}
+                {{(item.currentStatus=='' || item.currentStatus==null)&&index==0 ? '家长':item.refPersonName}}
+                
               </p>
             </div>
         </TimelineItem>
         <!-- <TimelineItem><a href="#">查看更多</a></TimelineItem> -->
       </Timeline>
     </div>
-    <Button type="primary" class="cancel" v-if="roleId==1&&agreeStat==1" :disabled="agreeStat==1?false:true" @click="handleCancel()">撤回</Button>
+    <img class="statusImg" 
+        :src='currentStatus==0?status1:
+        currentStatus==1?status2:
+        currentStatus==2?status3:
+        ""' alt="">
+    <!-- <Button type="primary" class="cancel" v-if="roleId==1&&agreeStat==1" :disabled="agreeStat==1?false:true" @click="handleCancel()">撤回</Button> -->
     <div v-if="roleId==2&&agreeStat==1" class="spDom">
       <Button type="primary" class="aggreeBtn" @click="aggreeBtn(1)">同意</Button>
       <Button type="success" class="rejectBtn" ghost @click="aggreeBtn(2)">驳回</Button>
@@ -74,7 +97,9 @@
 import http from '@/libs/http'
 import {URL} from '@/libs/url'
 import common from '@/libs/units.js'
-import nodata from '@/assets/imgs/no-data.png';//审批拒绝
+import status1 from '@/assets/imgs/status1.png';//审批中
+import status2 from '@/assets/imgs/status2.png';//审核通过
+import status3 from '@/assets/imgs/status3.png';//审批拒绝
 export default {
   name: 'index',
   data () {
@@ -86,7 +111,6 @@ export default {
       optPhone:'',
       roleId:'',
       spList:[],
-      agreeStat:'',//审批状态
       flowNo:'',//流水号
       teacherName:'',//被访人
       visitReason:'',//来访目的
@@ -94,7 +118,10 @@ export default {
       visitorName:'',//登记人
       sfzType:'',//身份
       visitTime:'',//访问时间
-      eventStatus:'',//订单状态
+      currentStatus:'',//审批状态值
+      status1:status1,
+      status2:status2,
+      status3:status3,
     }
   },
   created(){
@@ -152,9 +179,7 @@ export default {
           }
           this.visitorName = res.data.event.visitorName;//登记人
           this.sfzType = res.data.event.visitorIdentity;
-          this.agreeStat = res.data.event.approveStr=="未审批"?1:res.data.event.approveStr=="同意"?2:res.data.event.approveStr=="拒绝"?3:""
-          this.eventStatus = res.data.event.eventStatus;
-          console.log("agreeStat",this.agreeStat)
+          this.currentStatus = res.data.event.currentStatus;
         }else{
           this.$Message.info(res.msg)
         }
@@ -236,6 +261,7 @@ export default {
 .visitorPage{
   padding:10px 0 50px 0;
   background:rgba(249,249,248);
+  position:relative;
   .title{
     background:#fff;
     padding:20px;
@@ -246,7 +272,6 @@ export default {
     p{
       margin-top:7px;
       font-size:15px;
-      color:#f8b465;
     }
   }
   .content{
@@ -272,6 +297,12 @@ export default {
     .ivu-list-split .ivu-list-item{
       border-bottom:none;
     }
+  }
+  .statusImg{
+    height:70px;
+    position:absolute;
+    top:80px;
+    right:20px;
   }
   .cardStep{
     margin-top:20px;
@@ -300,10 +331,14 @@ export default {
         color:#999;
         font-weight:normal;
       }
+      .statusStyle{
+        font-size:13px;
+        font-weight:normal;
+      }
     }
     .namedetail{
-      color:rgba(0,184,122);
       font-size:13px;
+      color: #999;
     }
     /deep/.ivu-timeline-item-content{
       margin-left:30px;
@@ -356,5 +391,14 @@ export default {
   }
   /deep/.ivu-timeline-item{
     padding-bottom:5px;
+  }
+  .argeeStyle{
+    color:rgba(0, 184, 122);
+  }
+  .rejectStyle{
+    color:rgb(250, 100, 0);
+  }
+  .needStyle{
+    color:#f8b465;
   }
 </style>
