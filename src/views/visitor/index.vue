@@ -27,6 +27,7 @@
       <span>暂无数据</span>
     </div>
     <Button class="addAsk" type="primary" @click="handleAdd()" v-if="roleId==1">新增</Button>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -61,6 +62,7 @@ export default {
       roleId:'',//角色id 1-提交人 2-审批人 3-门卫
       nodata:nodata,
       isNodata:true,
+      isLoading:false,
     }
   },
   created(){
@@ -83,6 +85,7 @@ export default {
   },
   methods: {
     getConfig(){
+      this.isLoading = true;
       var url;
       //2位审批人老师端
       if(this.roleId==2){
@@ -104,6 +107,7 @@ export default {
         }
       }).then((res) => {
         // setTimeout(msg, 2000); 
+        this.isLoading = false;
         if(res.code==200){
           if(!res.data.length){
             this.isNodata = true;

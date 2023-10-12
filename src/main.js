@@ -6,7 +6,10 @@ import common from '@/libs/units.js'
 import tool from '@/libs/tool.js'
 import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
+import component from '@/libs/common.js'
 Vue.use(ViewUI)
+Vue.use(component)
+
 Vue.prototype.tool = tool;
 
 Vue.prototype.common = common

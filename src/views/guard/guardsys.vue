@@ -32,6 +32,7 @@ export default {
       roleType:'',//1-门卫，2-宿管
       schoolId:'',
       id:'',//人员id
+      phone:'',
     }
   },
   created(){
@@ -40,6 +41,7 @@ export default {
     this.roleType = common.getQueryVariable("roleType");//角色类型
     this.schoolId = common.getQueryVariable("schoolId");//学校id
     this.id = common.getQueryVariable("id");//人员id
+    this.phone = common.getQueryVariable("phone");//人员id
     
     // this.optPhone = this.$route.query.optPhone;
   },
@@ -56,6 +58,7 @@ export default {
         query:{
           schoolId:this.schoolId,
           roleType:this.roleType,
+          phone:this.phone,
           id:this.id
         }
       })

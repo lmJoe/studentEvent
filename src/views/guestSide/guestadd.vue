@@ -53,6 +53,7 @@
       </FormItem>
     </Form>
     <Button type="primary" class="submitBtn" @click="shureSubmit">确认预约</Button>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -96,6 +97,7 @@ export default {
       inviteCount:0,//邀约限制人数
       isdisAbled:false,//根据邀约或者拜访来判断时间是否可以选择
       inviteId:'',
+      isLoading:false,
     }
   },
   created(){
@@ -134,6 +136,7 @@ export default {
   methods: {
     //发起预约
     addAskFun(){
+      this.isLoading = true;
       var params = {
         visitorName: this.formItemList[0].visitName,
         visitorPhone: this.formItemList[0].phone,
@@ -159,6 +162,7 @@ export default {
           "Content-Type":"application/json",
         }
       }).then((res) => {
+        this.isLoading = false;
         console.log("res",res)
         if(res.code==200){
           console.log("res",res)

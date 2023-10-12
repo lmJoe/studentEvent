@@ -85,11 +85,11 @@
         currentStatus==1?status2:
         currentStatus==2?status3:
         ""' alt="">
-    <!-- <Button type="primary" class="cancel" v-if="roleId==1&&agreeStat==1" :disabled="agreeStat==1?false:true" @click="handleCancel()">撤回</Button> -->
-    <div v-if="roleId==2&&agreeStat==1" class="spDom">
+    <div v-if="roleId==2&&currentStatus==0" class="spDom">
       <Button type="primary" class="aggreeBtn" @click="aggreeBtn(1)">同意</Button>
       <Button type="success" class="rejectBtn" ghost @click="aggreeBtn(2)">驳回</Button>
     </div>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -122,6 +122,7 @@ export default {
       status1:status1,
       status2:status2,
       status3:status3,
+      isLoading:true,
     }
   },
   created(){
@@ -153,6 +154,7 @@ export default {
       })
     },
     getDetailFun(){
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'get',
@@ -164,6 +166,7 @@ export default {
         }
       }).then((res) => {
         console.log("res",res)
+        this.isLoading = false;
         if(res.code==200){
           console.log("返回数据",res)
           this.spList = res.data.eventHistory;
@@ -187,35 +190,8 @@ export default {
         console.log(err);
       });
     },
-    handleCancel(){
-      http({
-        //这里是你自己的请求方式、url和data参数
-        method: 'post',
-        url:URL.recordUrl.visiteventRollback,
-        data: {
-           eventId:Number(this.eventId),
-           optPhone:Number(this.optPhone),
-        },
-        //假设后台需要的是表单数据这里你就可以更改
-        headers: {
-          "Content-Type":"application/json",
-        }
-      }).then((res) => {
-        console.log("res",res)
-        if(res.code==200){
-          console.log("返回数据",res)
-          this.$Message.info(res.msg);
-          setTimeout(() => {
-            this.$router.go(-1);
-          }, 1500);
-        }else{
-          this.$Message.info(res.msg)
-        }
-      }).catch(function (err) {
-        console.log(err);
-      });
-    },
     aggreeBtn(num){
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'post',
@@ -230,6 +206,7 @@ export default {
         }
       }).then((res) => {
         console.log("res",res)
+        this.isLoading = false;
         if(res.code==200){
           console.log("返回数据",res)
           this.$Message.info(res.msg);
@@ -377,7 +354,7 @@ export default {
     }
   }
   /deep/.ivu-btn-primary{
-    border-color:#ff2828;
+    border-color:#18a470;
   }
 
 }

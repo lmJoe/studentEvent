@@ -68,7 +68,8 @@ export default {
                   query:{
                     roleType:res.data.roleType,
                     schoolId:res.data.schoolId,
-                    id:res.data.id
+                    id:res.data.id,
+                    phone:res.data.phone
                   }
                 })
               }, 1500);

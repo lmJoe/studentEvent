@@ -18,6 +18,7 @@
       <span>暂无数据</span>
     </div>
     <Button class="addAsk" type="primary" @click="handleAdd()" v-if="roleId==1">发起访客预约</Button>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -38,6 +39,7 @@ export default {
       dataList:[],
       nodata:nodata,
       openId:'',
+      isLoading:false,
     }
   },
   created(){
@@ -59,6 +61,7 @@ export default {
   },
   methods: {
     getConfig(){
+      this.isLoading = true;
       // const msg = this.$Message.loading({
       //     content: 'Loading...',
       //     duration: 0
@@ -79,6 +82,7 @@ export default {
         }
       }).then((res) => {
         // setTimeout(msg, 2000); 
+        this.isLoading = false;
         if(res.code==200){
           if(!res.data.length){
             this.isNodata = true;

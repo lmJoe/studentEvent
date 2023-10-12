@@ -12,6 +12,7 @@
         </FormItem>
     </Form>
     <Button type="primary" class="submitBtn" @click="shureSubmit">确定</Button>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -26,6 +27,7 @@ export default {
       title:'邀请填写',
       isStudent:false,
       optPhone:'',
+      isLoading:false,
       formItem: {
         visitNum: '',
         startTime:'',
@@ -59,6 +61,7 @@ export default {
   methods: {
     //发起预约
     addAskFun(){
+      this.isLoading = true;
       var params = {
         startTime: common.changeTimeFormat(this.formItem.startTime),
         endTime: common.changeTimeFormat(this.formItem.endTime),
@@ -76,6 +79,7 @@ export default {
           "Content-Type":"application/json",
         }
       }).then((res) => {
+        this.isLoading = false;
         console.log("res",res)
         if(res.code==200){
           console.log("res",res)

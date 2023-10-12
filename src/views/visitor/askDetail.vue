@@ -59,7 +59,7 @@
       </Timeline>
     </div>
     <Button type="primary" class="backBtn" 
-            v-if="roleId==1&&agreeStat==0" 
+            v-if="(roleId==1&&(agreeStat==0||agreeStat==1))&&guardCheckoutStatus!==1" 
             :disabled="agreeStat==0?false:true" 
             @click="askBtn()">撤回
     </Button>
@@ -67,7 +67,7 @@
       <Button type="primary" class="aggreeBtn" @click="aggreeBtn(1)">同意</Button>
       <Button type="success" class="rejectBtn" ghost @click="aggreeBtn(2)">拒绝</Button>
     </div>
-    
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -107,6 +107,8 @@ export default {
       head:head,//学生头像
       roleId:'', //角色id 1-提交人 2-审批人 3-门卫
       token:'',//openId
+      guardCheckoutStatus:'',//门卫登记状态:0-未登记，1-同意,2-拒绝
+      isLoading:false,
     }
   },
   created(){
@@ -137,6 +139,7 @@ export default {
   methods: {
     //获取右上角选择数据
     getDetailFun(){
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'get',
@@ -148,6 +151,7 @@ export default {
         }
       }).then((res) => {
         console.log("res",res)
+        this.isLoading = false;
         if(res.code==200){
           console.log("返回数据",res)
           this.studentName = res.data.event.studentName;
@@ -159,6 +163,7 @@ export default {
           this.eventEndTime = res.data.event.eventEndTime;
           this.eventReason = res.data.event.eventReason;
           this.eventPicPath = res.data.event.eventPicPathArr;
+          this.guardCheckoutStatus = res.data.event.guardCheckoutStatus;
           this.temperatureStatus = res.data.event.temperatureStatus==1?'体温正常':'体温异常',
           this.temperature = res.data.event.temperature;
           this.spList = res.data.eventHistory;
@@ -177,6 +182,7 @@ export default {
       })
     },
     askBtn(){
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'post',
@@ -190,6 +196,7 @@ export default {
           "Content-Type":"application/json",
         }
       }).then((res) => {
+        this.isLoading = false;
         console.log("res",res)
         if(res.code==200){
           console.log("返回数据",res)
@@ -205,6 +212,7 @@ export default {
       });
     },
     aggreeBtn(num){
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'post',
@@ -218,6 +226,7 @@ export default {
           "Content-Type":"application/json",
         }
       }).then((res) => {
+        this.isLoading = false;
         console.log("res",res)
         if(res.code==200){
           console.log("返回数据",res)

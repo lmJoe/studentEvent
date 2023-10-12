@@ -20,6 +20,7 @@
     <div class="shareBg" v-show="shareDialog">
         <img :src="shareImg" alt="">
       </div>
+      <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -45,6 +46,7 @@ export default {
       inviteUrl:'',
       shareImg:shareImg,
       shareDialog:false,
+      isLoading:false,
     }
   },
   created(){
@@ -62,6 +64,7 @@ export default {
     useWxShare(){
       //请求微信配置参数接口（获取签名），由后台给接口给
       var urls = window.location.href.split('#')[0];
+      
       console.log(urls, 22222333);
       // const msg = this.$Message.loading({
       //     content: 'Loading...',
@@ -122,6 +125,7 @@ export default {
         })
     },
     findShareDetail(){
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'get',
@@ -132,6 +136,7 @@ export default {
           "Content-Type":"application/x-www-form-urlencoded",
         }
       }).then((res) => {
+        this.isLoading = false;
         if(res.code==200){
           console.log("返回数据----",res)
           this.teacherName = res.data.inviteInfo.teacherName;

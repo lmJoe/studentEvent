@@ -97,6 +97,7 @@
           <Button type="primary" class="submitBtn" @click="handleSubmit('formValidate')">提交</Button>
       </FormItem>
     </Form>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -122,7 +123,7 @@ export default {
         defaultList: [],
         imgName: '',
         visible: false,
-        uploadList: []
+        uploadList: [],
       },
       uploadListArr:[],//图片数据提交变量
       noStartChose: {
@@ -137,6 +138,7 @@ export default {
       },
       studentId:'',
       optPhone:'',
+      isLoading:false,
     }
   },
   created(){
@@ -169,6 +171,7 @@ export default {
     },
     //发布申请
     addAskFun(){
+      this.isLoading = true;
       // this.formValidate
       var regExp = new RegExp("^1[3578]\\d{9}$");
       var sfzReg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;//验证身份证
@@ -221,6 +224,7 @@ export default {
         }
       }).then((res) => {
         console.log("res",res)
+        this.isLoading = false;
         if(res.code==200){
           console.log("res",res)
           setTimeout(() => {

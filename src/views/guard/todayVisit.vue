@@ -22,6 +22,7 @@
       <img :src="nodata" alt="">
       <span>暂无数据</span>
     </div>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -47,6 +48,7 @@ export default {
       totalVis:'',//总访问人数
       visitNum:'',//今日已到访问人数
       id:'',//登录人员id
+      isLoading:false,
     }
   },
   created(){
@@ -70,6 +72,7 @@ export default {
   },
   methods: {
     getConfig(){
+      this.isLoading = true;
       // const msg = this.$Message.loading({
       //     content: 'Loading...',
       //     duration: 0
@@ -83,6 +86,7 @@ export default {
           "Content-Type":"application/x-www-form-urlencoded",
         }
       }).then((res) => {
+        this.isLoading = false;
         if(res.code==200){
           if(!res.data.eventVisitRecords.length){
             this.isNodata = true;

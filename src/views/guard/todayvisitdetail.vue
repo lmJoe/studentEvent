@@ -28,14 +28,18 @@
                 <span class="name">{{(item.visitName==''||item.visitName==null)?'访':item.visitName.charAt(0)}}</span>
             </template>
              <div>
-              <p class="doThing"><span>{{item.visitName}}</span><span class="time"  @click="hasVisit(item.eventId,item.id)">{{item.btnTips}}</span></p>
-              <p class="phone"><span>{{item.phone}}</span>
+              <p class="doThing">
+                  <span>{{item.visitName}}</span>
+                  <Button type="success" :disabled="item.isDisable"  @click="hasVisit(item.eventId,item.id)" class="time">{{item.btnTips}}</Button>
+              </p>
+              <p class="phone"><span>{{item.phone}}</span></p>
               <Tag class="tag">预约到访</Tag>
             </div>
         </TimelineItem>
         <!-- <TimelineItem><a href="#">查看更多</a></TimelineItem> -->
       </Timeline>
     </div>
+    <Loading v-show="isLoading"></Loading>
   </div>
 </template>
 
@@ -58,6 +62,8 @@ export default {
       visitAddress:'',
       spList:[],
       id:'',
+      isLoading:false,
+      codeDisabled:false,
     }
   },
   created(){
@@ -73,6 +79,7 @@ export default {
   },
   methods: {
     getDetailFun(){
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'get',
@@ -84,12 +91,15 @@ export default {
         }
       }).then((res) => {
         console.log("res",res)
+        this.isLoading = false;
         if(res.code==200){
           for(var i=0;i<res.data.visitorRecordList.length;i++){
             if(res.data.visitorRecordList[i].accessStatus==0){
               res.data.visitorRecordList[i].btnTips = '未到访'
+              res.data.visitorRecordList[i].isDisable = false;
             }else{
-              res.data.visitorRecordList[i].btnTips = '已登记'
+              res.data.visitorRecordList[i].btnTips = '已登记';
+              res.data.visitorRecordList[i].isDisable = true;
             }
           }
           this.spList = res.data.visitorRecordList;
@@ -106,6 +116,11 @@ export default {
       });
     },
     hasVisit(eventId,visitorId){
+      this.codeDisabled = true;
+      setTimeout(()=>{
+        this.codeDisabled = false;
+      },2000)
+      this.isLoading = true;
       var params = {
         eventId:eventId,
         visitorId:visitorId,
@@ -123,6 +138,7 @@ export default {
           "Content-Type":"application/json",
         }
       }).then((res) => {
+        this.isLoading = false;
         console.log("res",res)
         if(res.code==200){
           console.log("res",res)
