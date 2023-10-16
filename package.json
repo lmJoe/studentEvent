@@ -13,6 +13,7 @@
         "http-proxy-middleware": "^2.0.6",
         "image-conversion": "^2.1.1",
         "qrcodejs2": "0.0.2",
+        "vant-green": "^1.0.44",
         "view-design": "^4.7.0",
         "vue": "^2.7.14",
         "vue-router": "^3.6.5",

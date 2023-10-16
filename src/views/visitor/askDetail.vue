@@ -60,7 +60,7 @@
     </div>
     <Button type="primary" class="backBtn" 
             v-if="(roleId==1&&(agreeStat==0||agreeStat==1))&&guardCheckoutStatus!==1" 
-            :disabled="agreeStat==0?false:true" 
+            :disabled="(agreeStat==0||agreeStat==1)?false:true" 
             @click="askBtn()">撤回
     </Button>
     <div v-if="roleId==2&&agreeStat==0" class="spDom">
@@ -326,7 +326,8 @@ export default {
             display:block;
           }
           .right{
-            width:75%
+            width:75%;
+            overflow:hidden;
           }
         }
       }

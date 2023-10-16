@@ -143,8 +143,12 @@ export default {
   },
   created(){
     document.title = this.title;
-    this.studentId = this.$route.query.studentId;
-    this.optPhone = this.$route.query.optPhone;
+    if(common.getQueryVariable("studentId")){
+      this.studentId = common.getQueryVariable("studentId");//主动访问学生id
+    }
+    if(common.getQueryVariable("optPhone")){
+      this.optPhone = common.getQueryVariable("optPhone");//主动访问学生id
+    }
   },
   activated (){
     document.title = this.title;
@@ -171,7 +175,7 @@ export default {
     },
     //发布申请
     addAskFun(){
-      this.isLoading = true;
+      
       // this.formValidate
       var regExp = new RegExp("^1[3578]\\d{9}$");
       var sfzReg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;//验证身份证
@@ -191,10 +195,6 @@ export default {
         this.$Message.info('体温情况不能为空');
         return;
       }
-      if(!this.formValidate.bodyTemp){
-        this.$Message.info('体温不能为空');
-        return;
-      }
       if(!this.formValidate.desc){
         this.$Message.info('请假事由不能为空');
         return;
@@ -210,9 +210,9 @@ export default {
         studentId:this.studentId,
         temperature: this.formValidate.bodyTemp,
         temperatureStatus: this.formValidate.bodyTempStat=='体温正常'?1:2,
-        optPhone:this.optPhone,
       }
       console.log("params",params);
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'post',
@@ -229,6 +229,9 @@ export default {
           console.log("res",res)
           setTimeout(() => {
             this.$router.go(-1);
+          
+            // var url = window.location.protocol+'//'+window.location.hostname + '/event/index.html#/index?roleType='+this.roleType+'&studentId='+this.studentId+'&openId='+this.token+'&phone='+this.optPhone;
+            // location.replace(url)
           }, 1500);
         }else{
           this.$Message.info(res.msg);
@@ -322,7 +325,7 @@ export default {
       const check = this.formValidate.uploadList.length < 5;
       if (!check) {
           this.$Notice.warning({
-              title: 'Up to five pictures can be uploaded.'
+              title: '最多上传五张图片'
           });
           return false;
       }

@@ -136,7 +136,7 @@ export default {
   methods: {
     //发起预约
     addAskFun(){
-      this.isLoading = true;
+      
       var params = {
         visitorName: this.formItemList[0].visitName,
         visitorPhone: this.formItemList[0].phone,
@@ -152,6 +152,7 @@ export default {
         eventType:this.eventType
       }
       console.log("params",params);
+      this.isLoading = true;
       http({
         //这里是你自己的请求方式、url和data参数
         method: 'post',

@@ -11,8 +11,11 @@
         <p>来访开始时间：{{startTime}}</p>
         <p>来访结束时间：{{endTime}}</p>
       </div>
-      <div class="erweimaImg" ref="qrCodeUrl">
+      <div class="erweimaImg" ref="qrCodeUrl" @click="searchBigImg()">
 
+      </div>
+      <div class="erweimaImgBg" v-show="isBigImg" @click="closeBig()">
+        <div class="erweimaImgBig" ref="qrCodeUrlBig"></div>
       </div>
       <p class="tipsTitle">（长按放大或识别二维码）</p>
       <Button class="shareBtn" type="primary" size="large" @click="useWxShare()">分享</Button>
@@ -31,6 +34,7 @@ import common from '@/libs/units.js'
 import QRCode from "qrcodejs2"
 import shareImg from '@/assets/imgs/shareImg.png';//审批拒绝
 import { wexinShare } from '@/utils/weixinShare.js';
+import { ImagePreview } from 'vant-green';
 export default {
   name: 'index',
   data () {
@@ -47,6 +51,7 @@ export default {
       shareImg:shareImg,
       shareDialog:false,
       isLoading:false,
+      isBigImg:false
     }
   },
   created(){
@@ -61,6 +66,12 @@ export default {
     this.findShareDetail();
   },
   methods: {
+    closeBig(){
+      this.isBigImg = false;
+    },
+    searchBigImg(){
+      this.isBigImg = true;
+    },
     useWxShare(){
       //请求微信配置参数接口（获取签名），由后台给接口给
       var urls = window.location.href.split('#')[0];
@@ -80,6 +91,7 @@ export default {
         }
       }).then((res) => {
         if(res.code==200){
+          
           //微信加签
           console.log("res-----",res)
           var obj = {
@@ -119,6 +131,14 @@ export default {
             text: url, // 需要转换为二维码的内容
             width: 150,
             height: 150,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        })
+        var qrcodeBig = new QRCode(this.$refs.qrCodeUrlBig, {
+            text: url, // 需要转换为二维码的内容
+            width: 260,
+            height: 260,
             colorDark: '#000000',
             colorLight: '#ffffff',
             correctLevel: QRCode.CorrectLevel.H
@@ -218,6 +238,27 @@ export default {
       height:150px;
       border:1px solid #dedede;
       margin:20px auto 0;
+    }
+    .erweimaImgBg{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,.6);
+      z-index:10;
+      .erweimaImgBig{
+        background:#fff;
+        padding:10px;
+        width:280px;
+        height:280px;
+        position:fixed;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        margin:auto;
+      }
     }
   }
   .shareBg{
