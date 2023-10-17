@@ -53,7 +53,7 @@
             :show-upload-list="false"
             :default-file-list="formValidate.defaultList"
             :on-success="handleSuccess"
-            :format="['jpg','jpeg','png']"
+            :format="['jpg','jpeg','png','heif','gif','webp','bmp','heic']"
             :max-size="8224"
             :on-format-error="handleFormatError"
             :on-exceeded-size="handleMaxSize"

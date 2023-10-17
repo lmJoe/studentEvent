@@ -24,11 +24,11 @@
           <p><span class="left">体温：</span><span class="right">{{temperature}}</span></p>
         </div>
         <div class="askImages">
-          <img v-for="(item,index) in eventPicPath" :key="index" :src="item" />
+          <img v-for="(item,index) in eventPicPath" :key="index" :src="item" @click="searchBigImg(item)" />
         </div>
 
       </div>
-      <img class="statusImg" 
+      <img class="statusImg"
           :src='agreeStat==0?status1:
           agreeStat==1?status2:
           agreeStat==2?status3:
@@ -66,6 +66,9 @@
     <div v-if="roleId==2&&agreeStat==0" class="spDom">
       <Button type="primary" class="aggreeBtn" @click="aggreeBtn(1)">同意</Button>
       <Button type="success" class="rejectBtn" ghost @click="aggreeBtn(2)">拒绝</Button>
+    </div>
+    <div class="bigImgBg" v-show="isBigImg" @click="closeBig()">
+      <img :src="bigImgUrl" class="bigImg" />
     </div>
     <Loading v-show="isLoading"></Loading>
   </div>
@@ -109,6 +112,8 @@ export default {
       token:'',//openId
       guardCheckoutStatus:'',//门卫登记状态:0-未登记，1-同意,2-拒绝
       isLoading:false,
+      isBigImg:false,
+      bigImgUrl:'',
     }
   },
   created(){
@@ -137,6 +142,13 @@ export default {
  
   },
   methods: {
+    closeBig(){
+      this.isBigImg = false;
+    },
+    searchBigImg(item){
+      this.bigImgUrl = item;
+      this.isBigImg = true;
+    },
     //获取右上角选择数据
     getDetailFun(){
       this.isLoading = true;
@@ -328,6 +340,7 @@ export default {
           .right{
             width:75%;
             overflow:hidden;
+            word-break: break-all;
           }
         }
       }
@@ -413,7 +426,34 @@ export default {
       width:40%;
     }
   }
-  
+  .bigImgBg{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,.6);
+      z-index:10;
+      .bigImg{
+        width:90%;
+        height:500px;
+        // position:fixed;
+        // top:0;
+        // left:0;
+        // right:0;
+        // bottom:0;
+        // margin:auto;
+
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
 }
 
 /deep/.ivu-timeline-item{
