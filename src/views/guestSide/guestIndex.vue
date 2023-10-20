@@ -10,7 +10,7 @@
         <div class="content">
           <p>访客：{{item.visitorName}}</p>
           <p>来访目的：{{item.visitReason}}</p>
-          <p>被访人：{{item.studentName}}</p>
+          <p>被访人：{{item.teacherName}}</p>
         </div>
     </Card>
     <div class="nodata" v-if="isNodata">

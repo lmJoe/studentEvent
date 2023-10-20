@@ -60,13 +60,13 @@
             :before-upload="handleBeforeUpload"
             multiple
             type="drag"
-            action="https://xskwx.zjhuaxuntong.com/jxaxService/eventrec/uploadEventPic">
+            :action="ajaxUrl+'/eventrec/uploadEventPic'">
             <div class="upload">
                 <span>图片</span>
                 <Icon type="ios-add-circle-outline" size="20"></Icon>
             </div>
         </Upload>
-        <ImagePreview v-model="formValidate.visible" :preview-list="['http://39.171.241.227:18551/images/event/' + formValidate.imgName]" />
+        <ImagePreview v-model="formValidate.visible" :preview-list="[ajaxUrl + formValidate.imgName]" />
       </FormItem>
       <!-- <FormItem class="stepBox">
         <Timeline class="stepContainer">
@@ -139,6 +139,7 @@ export default {
       studentId:'',
       optPhone:'',
       isLoading:false,
+      ajaxUrl:'',
     }
   },
   created(){
@@ -148,6 +149,12 @@ export default {
     }
     if(common.getQueryVariable("optPhone")){
       this.optPhone = common.getQueryVariable("optPhone");//主动访问学生id
+    }
+    var hosturl = window.location.host;
+    if (hosturl == "wxxsk.zjhuaxuntong.com") {
+        this.ajaxUrl = "https://wxxsk.zjhuaxuntong.com/jxaxService"; //正式环境地址
+    } else {
+        this.ajaxUrl = "https://xskwx.zjhuaxuntong.com/jxaxService";
     }
   },
   activated (){

@@ -6,7 +6,16 @@ import common from '@/libs/units.js'
 
 //请求Mock地址封装
 axios.defaults.timeout = 100000;
-axios.defaults.baseURL = '/jxaxService';
+// axios.defaults.baseURL = '/jxaxService'; //开发环境
+
+var hosturl = window.location.host;
+var apiUrl;
+if (hosturl == "wxxsk.zjhuaxuntong.com") {
+    apiUrl = "https://wxxsk.zjhuaxuntong.com/jxaxService"; //正式环境地址
+} else {
+    apiUrl = "https://xskwx.zjhuaxuntong.com/jxaxService";
+}
+axios.defaults.baseURL = apiUrl; //开发环境
 //请求方法封装
 const http = options => {
     var that = this;

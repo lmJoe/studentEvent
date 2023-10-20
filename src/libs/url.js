@@ -2,12 +2,7 @@
 // process.env.NODE_ENV环境
 // let baseURL;
 
-// var hosturl = window.location.host;
-// if (hosturl == "xskwx.zjhuaxuntong.com") {
-//     var apiUrl = "https://xskwx.zjhuaxuntong.com";
-// } else {
-//     var apiUrl = "https://xskwx.zjhuaxuntong.com";
-// }
+
 export var URL = {
     recordUrl: {
         addAsk: '/eventrec/add', //请假申请

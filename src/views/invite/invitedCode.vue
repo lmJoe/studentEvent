@@ -115,6 +115,7 @@ export default {
           //引用
           // wexinShare(obj, shareData,callback);
           wexinShare(obj, shareData,(res)=>{
+            debugger
             console.log("分享实现调用",res);
             //弹起分享窗口
             this.shareDialog = true;
@@ -135,6 +136,8 @@ export default {
             colorLight: '#ffffff',
             correctLevel: QRCode.CorrectLevel.H
         })
+    },
+     creatQrCode1(url) {
         var qrcodeBig = new QRCode(this.$refs.qrCodeUrlBig, {
             text: url, // 需要转换为二维码的内容
             width: 260,
@@ -166,6 +169,7 @@ export default {
           this.erweimaUrl = res.data.inviteUrl;
           this.linkimgUrl = res.data.inviteLinkPic;
           this.creatQrCode(erweimaUrl)
+          this.creatQrCode1(erweimaUrl)
         }else{
           this.$Message.info(res.msg)
         }
