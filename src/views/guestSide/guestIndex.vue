@@ -31,7 +31,7 @@ export default {
   name: 'index',
   data () {
     return {
-      title:'我发起的',
+      title:'访客名单',
       isNodata:true,
       studentId:'',
       optPhone:'',
@@ -49,6 +49,12 @@ export default {
     this.studentId = common.getQueryVariable("studentId");//家长手机
     this.roleId = common.getQueryVariable("roleType");//角色id
     // console.log("1",this.optPhone,this.roleId)
+    if(this.roleId==1){
+      this.title = '我发起的';
+    }else{
+      this.title = '访客名单';
+    }
+    document.title = this.title;
     this.getConfig()
     
   },

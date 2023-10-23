@@ -44,7 +44,7 @@ export default {
   name: 'index',
   data () {
     return {
-      title:'学生请假',
+      title:'请假名单',
       status1:status1,
       status2:status2,
       status3:status3,
@@ -66,13 +66,18 @@ export default {
     }
   },
   created(){
-    document.title = this.title;
     //获取链接中的参数
     this.optPhone = common.getQueryVariable("phone");//家长手机
     this.studentId = common.getQueryVariable("studentId");//学生id
     this.token = common.getQueryVariable("openId");//openid
     this.roleId = common.getQueryVariable("roleType");//角色id
-    console.log("1",this.optPhone,this.roleId)
+    console.log("1",this.optPhone,this.roleId);
+    if(this.roleId==1){
+      this.title = '我发起的';
+    }else{
+      this.title = '请假名单';
+    }
+    document.title = this.title;
     this.getConfig()
     
   },
