@@ -15,7 +15,7 @@ module.exports = {
                 logLevel: 'debug',
                 secure: false,
                 // pathRewrite: {
-                //     '^/api': '' //需要rewrite的,
+                //     '^/jxaxService': '/jxaxService' //需要rewrite的,
                 // }
             },
         },

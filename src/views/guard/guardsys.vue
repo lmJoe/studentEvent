@@ -38,7 +38,7 @@ export default {
   created(){
     document.title = this.title;
     // this.studentId = this.$route.query.studentId;
-    this.roleType = common.getQueryVariable("roleType");//角色类型
+    this.roleType = common.getQueryVariable("roleType");//角色类型 1-门卫 2-宿管
     this.schoolId = common.getQueryVariable("schoolId");//学校id
     this.id = common.getQueryVariable("id");//人员id
     this.phone = common.getQueryVariable("phone");//人员id
@@ -53,15 +53,29 @@ export default {
   },
   methods: {
     toDetailAsk(){
-      this.$router.push({
-        path:'asklist',
-        query:{
-          schoolId:this.schoolId,
-          roleType:this.roleType,
-          phone:this.phone,
-          id:this.id
-        }
-      })
+      //1-门卫 2-宿管
+      if(this.roleType==1){
+        this.$router.push({
+          path:'asklist',
+          query:{
+            schoolId:this.schoolId,
+            roleType:this.roleType,
+            phone:this.phone,
+            id:this.id
+          }
+        })
+      }else{
+        this.$router.push({
+          path:'sgAsklist',
+          query:{
+            schoolId:this.schoolId,
+            roleType:this.roleType,
+            phone:this.phone,
+            id:this.id
+          }
+        })
+      }
+      
     },
     toDetailVisit(){
       this.$router.push({

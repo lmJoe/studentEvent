@@ -115,7 +115,6 @@ export default {
           //引用
           // wexinShare(obj, shareData,callback);
           wexinShare(obj, shareData,(res)=>{
-            debugger
             console.log("分享实现调用",res);
             //弹起分享窗口
             this.shareDialog = true;

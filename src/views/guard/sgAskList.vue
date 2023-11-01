@@ -6,9 +6,9 @@
             <span style="display:block;">{{row.gradeName}}</span>
             <span style="display:block;">({{row.className}})</span>
         </template>
-        <template slot-scope="{ row, index }" slot="action">
-            <Button type="primary" size="small" v-if="row.checkoutTime==''" @click="guardianCheckout(row,index)">点击登记</Button>
-            <span v-if="row.checkoutTime">{{row.checkoutTime}}</span>
+        <template slot-scope="{ row }" slot="action">
+            <span v-if="row.guardianCheckStatus==0">未出校</span>
+            <span v-if="row.guardianCheckStatus==1">{{row.checkoutTime}}</span>
         </template>
     </Table>
     <Loading v-show="isLoading"></Loading>
@@ -25,7 +25,7 @@ export default {
   name: 'index',
   data () {
     return {
-      title:'门卫管理',
+      title:'宿舍管理',
       tableList: [
         {
             title: '学生姓名',
@@ -41,7 +41,7 @@ export default {
         {
             title: '请假时间',
             key: 'leaveTimePeriod',
-            align:'center'
+            align:'center',
         },
         {
             title: '请假事由',
@@ -49,7 +49,7 @@ export default {
             align:'center'
         },
         {
-            title: '登记时间',
+            title: '出校时间',
             align:'center',
             slot: 'action',
         }
@@ -102,36 +102,7 @@ export default {
       }).catch(function (err) {
         console.log(err);
       });
-    },
-    guardianCheckout(params,itemIndex){
-    this.isLoading = true;
-     var params = {
-        eventId:params.eventId,
-        checkoutStatus:1,
-        optPhone:Number(this.phone),
-        guardianId:parseInt(this.id),
-      }
-      http({
-        //这里是你自己的请求方式、url和data参数
-        method: 'post',
-        url:URL.recordUrl.guardianCheckout,
-        data:params,
-        //假设后台需要的是表单数据这里你就可以更改
-        headers: {
-          "Content-Type":"application/json",
-        }
-      }).then((res) => {
-        this.isLoading = false;
-        if(res.code==200){
-          this.listGuardianCheckList();
-          this.$Message.info(res.msg);
-        }else{
-          this.$Message.info(res.msg);
-        }
-      }).catch(function (err) {
-        console.log(err);
-      });
-    },
+    }
   }
 }
 </script>
@@ -161,11 +132,5 @@ export default {
 }
 /deep/.ivu-btn-small{
   font-size:12px;
-}
-/deep/.ivu-table-fixed-header{
-	pointer-events: all;
-}
-/deep/.ivu-table-fixed-body {
-	pointer-events: all;
 }
 </style>

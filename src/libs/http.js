@@ -15,7 +15,7 @@ if (hosturl == "wxxsk.zjhuaxuntong.com") {
 } else {
     apiUrl = "https://xskwx.zjhuaxuntong.com/jxaxService";
 }
-axios.defaults.baseURL = apiUrl; //开发环境
+axios.defaults.baseURL = apiUrl; //正式环境
 //请求方法封装
 const http = options => {
     var that = this;

@@ -71,6 +71,11 @@ const routes = [{
         name: 'askList',
         component: resolve => (require(['@/views/guard/askList'], resolve))
 
+    }, {
+        path: "/sgAskList",
+        name: 'sgAskList',
+        component: resolve => (require(['@/views/guard/sgAskList'], resolve))
+
     }
 
 
